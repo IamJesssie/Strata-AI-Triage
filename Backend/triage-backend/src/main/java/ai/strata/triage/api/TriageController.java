@@ -23,4 +23,10 @@ public class TriageController {
     public TriageResponse triage(@RequestBody TriageRequest request) {
         return triageService.analyze(request);
     }
+
+    @PostMapping(value = "/enhance", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public EnhanceRequest enhance(@RequestBody EnhanceRequest request) {
+        String result = triageService.enhance(request.text());
+        return new EnhanceRequest(result);
+    }
 }

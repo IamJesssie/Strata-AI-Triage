@@ -70,6 +70,36 @@ public class OpenRouterClient {
         }
     }
 
+    public String enhance(String rawText) {
+        if (!isConfigured()) {
+            throw new IllegalStateException("OpenRouter API key missing.");
+        }
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("model", properties.model());
+        payload.put("temperature", 0.7);
+        payload.put("messages", List.of(
+            Map.of("role", "user", "content", PromptRules.enhancePrompt(rawText))
+        ));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(properties.apiKey());
+        headers.add("X-Title", "Strata AI Triage");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+
+        String url = properties.baseUrl() + "/chat/completions";
+        try {
+            String raw = restTemplate.postForObject(url, entity, String.class);
+            JsonNode root = objectMapper.readTree(raw);
+            return root.path("choices").path(0).path("message").path("content").asText(rawText).trim();
+        } catch (Exception ex) {
+            log.warn("Failed to enhance text via OpenRouter", ex);
+            return rawText;
+        }
+    }
+
     private TriageResponse parseResponse(String raw, String model) {
         if (raw == null || raw.isBlank()) {
             throw new RuntimeException("OpenRouter returned empty response");

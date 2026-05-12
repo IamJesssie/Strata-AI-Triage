@@ -31,4 +31,15 @@ public class TriageService {
         }
         return fallbackClassifier.classify(request);
     }
+
+    public String enhance(String rawText) {
+        if (openRouterClient.isConfigured()) {
+            try {
+                return openRouterClient.enhance(rawText);
+            } catch (Exception ex) {
+                log.warn("OpenRouter enhancement failed", ex);
+            }
+        }
+        return rawText;
+    }
 }

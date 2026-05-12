@@ -55,4 +55,19 @@ public final class PromptRules {
     private static String safe(String value) {
         return value == null ? "" : value.trim();
     }
+
+    public static String enhancePrompt(String rawText) {
+        return String.join(
+            "\n",
+            "You are a professional Strata Manager. Your task is to take the following rough, incomplete, or informal enquiry and rewrite it into a formal, structured email that is ready to be processed.",
+            "Rules:",
+            "- Keep the original intent and facts.",
+            "- Use a professional, polite tone.",
+            "- Structure it with a formal greeting and sign-off.",
+            "- Return ONLY the enhanced text. No preamble.",
+            "",
+            "Rough Input:",
+            rawText
+        );
+    }
 }

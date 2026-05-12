@@ -1081,10 +1081,32 @@ function EmptyState({ icon: Icon, title, desc, action }) {
 }
 
 function NewEnquiryModal({ onClose, onSubmit }) {
+  const [isEnhancing, setIsEnhancing] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [subject, setSubject] = useState('')
   const [text, setText] = useState('')
+
+  const handleEnhance = async () => {
+    if (!text.trim()) return
+    setIsEnhancing(true)
+    try {
+      const response = await fetch('http://localhost:8080/api/triage/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+      if (response.ok) {
+        const data = await response.json()
+        const enhanced = data.text
+        setText(enhanced)
+      }
+    } catch (err) {
+      console.error('Enhance failed', err)
+    } finally {
+      setIsEnhancing(false)
+    }
+  }
 
   const submit = () => {
     onSubmit({
@@ -1117,6 +1139,9 @@ function NewEnquiryModal({ onClose, onSubmit }) {
             placeholder="Dear Strata Manager..."
           />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+            <button type="button" className="secondary-btn" style={{ marginRight: 'auto' }} onClick={handleEnhance} disabled={isEnhancing || !text.trim()}>
+              {isEnhancing ? 'Enhancing...' : '✨ Enhance with AI'}
+            </button>
             <button type="button" className="secondary-btn" onClick={onClose}>Cancel</button>
             <button type="button" className="primary-btn" onClick={submit} disabled={!text.trim()}>
               Simulate Enquiry
