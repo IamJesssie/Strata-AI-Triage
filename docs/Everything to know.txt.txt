@@ -1,0 +1,218 @@
+Build a working AI-powered solution
+
+Scenario
+Strata Management Consultants handles a high volume of client enquiries across email and web forms. Staff currently read each enquiry, determine what the person needs, and manually draft a response or route it to the right team member. This process is repetitive and time-consuming.
+Your Task
+Build a small, working tool or prototype that uses AI to help process incoming client enquiries. The solution should demonstrate your ability to integrate AI into a practical business workflow.
+At minimum, your solution should:
+•	Accept a client enquiry as input (text input is fine — no need for email integration).
+•	Use an AI model or API (e.g. OpenAI, Claude, Gemini, or a local model) to analyse the enquiry.
+•	Classify the enquiry type (e.g. new client, support request, complaint, general question).
+•	Generate a suggested response or recommended action for the staff member.
+•	Present the results in a usable way (web UI, command-line output, or simple dashboard — your choice).
+Bonus Points
++	Confidence scoring — how certain is the AI about its classification?
++	Prompt engineering — show us your prompts and explain your design choices.
++	Error handling — what happens when the AI gets a vague or nonsensical input?
++	Automation potential — how could this plug into a larger workflow (e.g. email system, CRM, task queue)?
++	A brief README explaining setup, how to run it, and any design decisions you made.
+What to Submit
+A link to a GitHub repository, a ZIP file of your code, or a link to a live demo. Include a brief README or notes explaining how to run it and what tools/APIs you used.
+
+Criteria	Points
+AI integration works and produces useful output	15
+Code quality, structure, and readability	8
+Practical thinking — solves a real problem, not just a tech demo	7
+Prompt design and AI interaction approach	5
+Bonus features (confidence scoring, error handling, etc.)	5
+
+
+🧭 What Is This App, in One Sentence?
+Imagine you work at a property management company and every day dozens of emails pour in — complaints about leaking pipes, new developers wanting quotes, owners who can't log in, lawyers asking for documents. Right now, a human has to open each email, figure out what it's about, who should handle it, and then write a reply. This app automates that triage step using AI, so the human operator only needs to review, adjust if needed, and hit Send.
+
+🖥️ The Screen Layout — Three Columns + a Left Rail
+When you open the app, the screen is split into four visible zones from left to right:
+
+[ Left Nav Rail ] | [ Enquiry List ] | [ Source Email ] | [ AI Insights Panel ]
+Think of it like a supercharged email client, similar to how Gmail has a sidebar, an inbox list, and an email reading pane — except there's a fourth panel where an AI assistant has already done the analysis.
+
+1️⃣ Left Nav Rail — The Sidebar (Far Left)
+This is the navigation and filter control panel. It stays fixed while everything else changes.
+
+🔷 Logo & App Name
+At the very top: "Strata Triage / Management Consultants" with a small indigo icon. Just branding — tells you which company's system this is.
+
+🔍 Search Bar (⌘K shortcut)
+A search box that filters all enquiries in real time as you type.
+You can search by sender name, email address, subject line, or anything in the email body.
+The ⌘K label (or Ctrl+K on Windows) is a keyboard shortcut — press those keys anywhere on screen and the cursor jumps straight into the search box without you having to click it. Very fast for power users.
+If you've typed something, a small ✕ button appears to clear it instantly.
+📥 Inbox / 📦 Archive / ⚙️ Settings — Navigation Buttons
+Three clickable items in the "Workspace" section:
+
+Button	What it does
+Inbox	Shows all active, unresolved enquiries waiting for attention
+Archive	Shows enquiries that have been replied to and sent — they move here automatically after you hit "Send"
+Settings	Opens the settings page (tone presets, signatures, etc.)
+Each button shows a number badge (e.g. "7" or "3") telling you how many items are in that view at a glance.
+
+🏷️ Categories Filter
+Below the nav buttons is a "Categories" section with four coloured dot filters:
+
+Category	Colour	Meaning
+Support	🟡 Amber	Existing owner/resident needing help (e.g. portal login, repairs)
+New Client	🟢 Green	Developer or prospect asking about your services
+Complaint	🔴 Red	A formal or escalating grievance (noise, water damage, etc.)
+General	⚫ Grey	Everything else — routine admin, document requests, approvals
+Each shows a count (how many enquiries of that type are in the inbox right now). Click a category to filter — only those enquiries show. Click again to clear the filter.
+
+👤 Operator Profile (Bottom of Rail)
+At the very bottom: "Alex Morgan — Triage Operator" with a green dot. The green dot means the operator is online/active. This is the logged-in user's identity — important because any action taken (like overriding the AI) gets recorded against this name in the audit trail.
+
+2️⃣ Enquiry List — The Middle-Left Column
+This is your inbox list — all the emails that have come in, stacked vertically. Click any row to open it.
+
+Each Row Shows:
+Sender name (e.g. "Margaret Whitfield") — bold if unread
+Time received (e.g. "12m ago", "1h", "Yesterday")
+Subject line (e.g. "Urgent: Water ingress in basement carpark")
+Preview snippet — the first line of the email body
+A coloured category badge — e.g. 🔴 Complaint, 🟢 New Client — this is what the AI decided
+A priority badge — High / Medium / Low
+A confidence % — how sure the AI is about its classification (e.g. 94%)
+A blue dot on unread items
+The Column Header:
+Shows the current view name ("Inbox" or "Archive"), total count, and how many are unread. If a search or filter is active, a chip appears showing what's active (e.g. "Complaint") with an ✕ to clear it.
+
+3️⃣ Source Email View — The Middle-Right Column
+When you click an enquiry in the list, this panel shows the actual raw email exactly as it arrived, formatted like a traditional email reader.
+
+What's Shown:
+From: sender's name and email address
+Subject: the email subject
+Received: date and time
+The full email body — unedited, exactly what was sent
+Why This Matters:
+The AI panel on the right shows the AI's interpretation of the email. This panel lets the operator read the original source to verify whether the AI got it right before sending a reply. It's the "source of truth."
+
+4️⃣ AI Insights Panel — The Far Right Column
+This is the heart of the system — where the AI's work is displayed and where the operator takes action. It's broken into four sections stacked vertically:
+
+🔷 Panel Header
+"AI Insights" title with a small badge showing the AI model name: claude-opus-4.7 (this tells you which AI engine is doing the analysis).
+↺ Refresh button (top right corner) — a small circular arrow icon. Clicking this tells the AI to re-analyse the email from scratch, generating a fresh classification and draft reply. Useful if something looks off.
+Section A: 🏷️ Classification
+This section answers: "What kind of email is this, and how serious is it?"
+
+Three badges appear:
+
+Category badge — e.g. 🔴 Complaint (colour-coded, same system as the left rail)
+Priority badge — e.g. 🔴 High Priority / 🟡 Medium Priority / ⚫ Low Priority
+(Optional) "Operator override" badge — appears in indigo/purple if a human has manually changed the AI's classification
+Confidence Bar: A horizontal progress bar (indigo/blue when AI is active, grey when overridden) fills up to show the AI's certainty — e.g. 94% Certain. When you first click an email, the bar animates from 0% up to the confidence score, so it feels "live."
+
+⚠️ Low Confidence Warning: If the AI is less than 70% sure, a yellow warning box appears:
+
+"Low confidence — review recommended. The model is unsure about this classification. Verify against the source email before sending." This is a safety net for tricky emails the AI isn't certain about.
+
+Intent Summary box: A small grey box shows a one-sentence plain-English summary of what the AI believes the sender wants. Example:
+
+"Owners corporation chair requesting urgent inspection of water ingress in basement carpark; possible warranty claim against original waterproofing contractor."
+
+✏️ Manual Override Button (inside Classification section)
+A small "Manual override" button (pencil icon) sits in the top-right corner of the Classification section. This opens a dropdown panel — a key power-user feature.
+
+What the Override Dropdown Does:
+
+Shows all four categories as clickable options (Support / New Client / Complaint / General)
+The current AI choice is marked with a checkmark ✓
+You click whichever category you think is actually correct
+An optional text box lets you type a reason (e.g. "This is a warranty claim, not just a complaint") — this reason feeds back into training data for future model improvements
+"Apply override" button confirms your change
+"Revert to AI" button (only shown if you've already overridden) undoes your change and restores the AI's original decision
+"Cancel" closes without saving
+When an override is active: the confidence bar turns grey (greyed out), the category badge changes to your chosen one, and an "Operator override" purple badge appears. The audit trail records who did it and when.
+
+Section B: ✅ Suggested Actions
+This section answers: "What should I actually do about this email?"
+
+The AI generates a checklist of specific action items — not generic advice, but concrete tasks tailored to this enquiry. Examples:
+
+✅ "Dispatch site inspection within 48 hours"
+✅ "Check warranty status with Atlas Waterproofing (2019 install)"
+☐ "Notify building manager and insurer"
+☐ "Log under common property — repairs register"
+Each checkbox is clickable — operators can tick/untick them to track what's been handled. Pre-ticked items are what the AI thinks are highest priority. Un-ticked are secondary suggestions.
+
+There's also a small "Show 2 lower-confidence suggestions" link — the AI has more ideas but has hidden the less-confident ones to avoid clutter. You can reveal them if needed.
+
+Section C: 📝 Response Draft
+This is the AI-written draft reply email, ready to send.
+
+At the top of the draft box:
+
+To: field — pre-filled with the sender's email address
+Tone: label — shows "Professional" (this comes from the Settings presets)
+The Draft Textarea: The full reply text is fully editable — you can click anywhere inside it and type, delete, or rewrite any part. It's a live text editor. The AI wrote a starting point; the human has final say.
+
+Footer of the draft box:
+
+Word count — e.g. "87 words · Grade 9 reading" (readability level, so replies stay accessible)
+"Copy to Clipboard" button — copies the entire draft to paste elsewhere (useful if you're replying via a separate email client). Turns to a green ✓ "Copied" briefly after clicking.
+"Send" button (indigo) — the primary action. Clicking Send:
+Briefly shows a ✓ "Sent" confirmation
+Automatically moves the enquiry from Inbox to Archive — this is the "archive-on-send" flow. The enquiry disappears from your inbox, keeping it clean.
+Section D: 📋 Audit Trail
+This is a chronological log of everything that has happened to this enquiry — like a paper trail or receipt. It shows as a vertical timeline with dots and lines.
+
+Standard steps shown for every enquiry:
+
+Received — when the email arrived (e.g. "Today, 9:42 AM")
+Parsed & embedded — the system read and processed the email (auto · 1.2s — it's fast)
+Classified by model — what the AI decided and with what confidence (e.g. "Complaint · 94%")
+Awaiting operator review — current state: waiting for a human to act
+If a manual override was applied, an extra step appears:
+
+Operator override — e.g. "Complaint → Support · Alex Morgan" — records exactly what was changed and who changed it.
+This trail is critical for accountability and compliance — strata management is a regulated industry, so every decision needs to be traceable.
+
+⚙️ Settings Page
+Clicking "Settings" in the left rail replaces the three-column workspace with a settings form. This is where you configure:
+
+Tone presets — e.g. Professional, Friendly, Formal — controls the style the AI uses when writing draft replies
+Signature presets — the sign-off text appended to every reply (e.g. "Alex Morgan, Strata Management Consultants")
+These settings feed directly into the AI's prompt when generating drafts.
+
+🔄 The Full Flow — Start to Finish
+Here's how one enquiry moves through the system:
+
+Email arrives from owner/lawyer/developer
+        ↓
+AI reads the email and classifies it
+(Support / New Client / Complaint / General)
+        ↓
+AI rates its own confidence (e.g. 94% sure)
+        ↓
+AI writes a suggested action checklist
+        ↓
+AI writes a full draft reply in the correct tone
+        ↓
+Operator opens the app, sees it in Inbox
+        ↓
+Operator reads the original email (Source View)
+        ↓
+Operator checks the AI Insights panel
+— Agrees? → Edit draft if needed → Hit Send → Enquiry moves to Archive
+— Disagrees? → Use Manual Override to correct the category → Then Send
+        ↓
+Audit trail records everything permanently
+💡 Key Design Decisions (in plain English)
+Design Choice	Why It Exists
+Dark background (Zinc-900)	Reduces eye strain for operators on long shifts
+No rounded chat bubbles	This is a professional tool, not a chat app — the UI signals seriousness
+Confidence % always visible	Operators should never blindly trust AI — transparency builds trust
+Archive-on-Send (automatic)	Keeps inbox clean; processed items don't clutter active work
+Audit trail with operator name	Strata management is legally regulated; everything must be traceable
+Editable draft	AI is a starting point, not the final word — humans stay in control
+ search shortcut	Designed for keyboard-heavy power users who want speed
+In short: this app takes the most time-consuming part of a strata manager's day — reading, categorising, and responding to enquiries — and reduces it to a review-and-approve workflow where the AI does the heavy lifting and the human provides oversight and accountability
