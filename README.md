@@ -22,9 +22,10 @@
 ## 1. What it does
 Strata AI Triage is an AI-powered prototype designed for property management companies to automate the high-volume task of processing client enquiries. It allows an operator to:
 *   **Paste live enquiries:** Input raw text from any email or web form.
+*   **Enhance input with AI:** Use the "✨ Enhance with AI" button to automatically clean up and professionalize rough, messy input notes before they are even triaged.
 *   **Analyse live:** Instantly classify the category, detect priority, and summarise intent.
+*   **Interactive Action Items:** The AI reads the enquiry and extracts a precise, contextual "To-Do" list (e.g., "Dispatch plumber", "Check warranty"). These are presented as interactive checkboxes so the operator can track their progress before finalizing the ticket.
 *   **Review AI responses:** Generate dynamic drafts that respect operator-defined tones (Professional, Brief, etc.).
-*   **Action items:** Extract and check off specific tasks before finalizing the triage.
 
 ## 2. Tech stack
 *   **Frontend:** React 19 + Vite (Modern SPA architecture).
