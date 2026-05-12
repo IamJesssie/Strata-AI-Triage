@@ -33,6 +33,7 @@ function App() {
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
+  const [panelWidths, setPanelWidths] = useState({ list: 320, source: 400 })
   const [overrides, setOverrides] = useState({})
   const [regenKey, setRegenKey] = useState(0)
   const [aiResults, setAiResults] = useState({})
@@ -162,7 +163,21 @@ function App() {
     return baseList.filter((enquiry) => {
       if (categoryFilter && effectiveCategory(enquiry) !== categoryFilter) return false
       if (!query) return true
-      return (
+      const startDrag = (panel, e) => {
+    const startX = e.clientX
+    const startWidth = panelWidths[panel]
+    const onMove = (moveEvent) => {
+      setPanelWidths(prev => ({ ...prev, [panel]: Math.max(150, startWidth + (moveEvent.clientX - startX)) }))
+    }
+    const onStop = () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onStop)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onStop)
+  }
+
+  return (
         enquiry.sender.toLowerCase().includes(query) ||
         enquiry.subject.toLowerCase().includes(query) ||
         enquiry.preview.toLowerCase().includes(query) ||
@@ -228,7 +243,9 @@ function App() {
   const selected = selectedId ? displayItems.find((enquiry) => enquiry.id === selectedId) ?? null : null
 
   return (
-    <div className="app">
+    <div className="app" style={{
+        gridTemplateColumns: `${panelWidths.list}px 4px ${panelWidths.source}px 4px 1fr`
+      }}>
       {showNewEnquiry && (
         <NewEnquiryModal onClose={() => setShowNewEnquiry(false)} onSubmit={handleNewEnquirySubmit} />
       )}
@@ -259,6 +276,7 @@ function App() {
         />
       ) : (
         <>
+          <div className="resizer" onMouseDown={(e) => startDrag('list', e)} />
           <EnquiryList
             view={view}
             items={displayItems}
@@ -273,7 +291,8 @@ function App() {
 
           {selected ? (
             <>
-              <SourceView enquiry={selected} />
+              <div className="resizer" onMouseDown={(e) => startDrag('source', e)} />
+            <SourceView enquiry={selected} />
               <AIInsights tone={tone} signature={signature}
                 key={`${selected.id}-${regenKey}`}
                 enquiry={selected}
@@ -890,16 +909,14 @@ function AIInsights({ enquiry, override, onOverride, onClearOverride, onSend, on
             />
             <div className="draft-footer">
               <span className="draft-meta">
-                {draft.trim().split(/s+/).filter(Boolean).length} words
+                {draft.trim().split(/\s+/).filter(Boolean).length} words
               </span>
               <div className="draft-actions">
-                <button type="button" className="secondary-btn" onClick={() => onRegenerate?.(enquiry.id)} disabled={isLoading}>
+                <button type="button" className="icon-btn" aria-label="Regenerate draft" onClick={() => onRegenerate?.(enquiry.id)} disabled={isLoading}>
                   <RotateCw size={12} strokeWidth={1.75} />
-                  {isLoading ? 'Generating' : 'Generate draft'}
                 </button>
-                <button type="button" className="secondary-btn" onClick={copy}>
+                <button type="button" className="icon-btn" aria-label="Copy to clipboard" onClick={copy}>
                   {copied ? <Check size={12} strokeWidth={2} /> : <Copy size={12} strokeWidth={1.75} />}
-                  {copied ? 'Copied' : 'Copy to Clipboard'}
                 </button>
                 <button type="button" className="primary-btn" onClick={send}>
                   {sent ? <Check size={12} strokeWidth={2.25} /> : <Send size={12} strokeWidth={1.75} />}
