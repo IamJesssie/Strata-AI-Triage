@@ -1,0 +1,44 @@
+@import './styles/fonts.css';
+
+:root {
+  --bg-canvas: #18181b;
+  --bg-panel: #09090b;
+  --bg-elevated: #18181b;
+  --bg-input: #09090b;
+  --bg-source: #ffffff;
+  --fg-primary: #f4f4f5;
+  --fg-secondary: #d4d4d8;
+  --fg-muted: #71717b;
+  --fg-disabled: #52525c;
+  --border-default: #27272a;
+  --border-strong: #3f3f47;
+  --accent: #4f39f6;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Source Serif 4', serif;
+  --font-mono: Consolas, ui-monospace, monospace;
+
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  background: var(--bg-canvas);
+  color: var(--fg-primary);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-canvas);
+}
+
+button {
+  font-family: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
