@@ -14,73 +14,112 @@
 10. [Error handling](#10-error-handling)
 11. [Automation potential](#11-automation-potential)
 12. [Design decisions](#12-design-decisions)
-13. [Scoring map](#13-scoring-map)
+13. [Criteria Checklist (Scoring Map)](#13-criteria-checklist-scoring-map)
+14. [Demo Scenarios (Copy-Paste)](#14-demo-scenarios-copy-paste)
 
 ---
 
 ## 1. What it does
-Strata AI Triage is an AI-powered email triage application designed for property management companies. It automates the process of reading, categorizing, and drafting responses to incoming emails, shifting the human operator's role from "creator" to "reviewer and approver".
+Strata AI Triage is an AI-powered prototype designed for property management companies to automate the high-volume task of processing client enquiries. It allows an operator to:
+*   **Paste live enquiries:** Input raw text from any email or web form.
+*   **Analyse live:** Instantly classify the category, detect priority, and summarise intent.
+*   **Review AI responses:** Generate dynamic drafts that respect operator-defined tones (Professional, Brief, etc.).
+*   **Action items:** Extract and check off specific tasks before finalizing the triage.
 
 ## 2. Tech stack
-*   **Frontend:** React, Vite, Tailwind CSS, shadcn/ui components.
+*   **Frontend:** React 19 + Vite (Modern SPA architecture).
+*   **Styling:** Native CSS Variables & Flexbox (No heavy frameworks for a "surgical" feel).
 *   **Icons:** Lucide React.
-*   **AI Model:** `inclusionai/ring-2.6-1t:free` (via OpenRouter).
-*   **Language:** TypeScript.
+*   **Backend:** Spring Boot 3.5 (Java 17).
+*   **AI Model:** `inclusionai/ring-2.6-1t:free` via OpenRouter.
 
 ## 3. Folder structure
-*   `Frontend/`
-    *   `src/app/` - Main application logic, layouts, and components.
-        *   `components/` - UI elements (shadcn) and custom application components (NavRail, AIInsights, etc.).
-    *   `src/styles/` - Tailwind configuration and CSS variables.
-    *   `public/` - Static assets.
-*   `Backend/` - (Placeholder for backend services).
+*   `Frontend/` - React application source, assets, and development config.
+*   `Backend/triage-backend/` - Java Spring Boot source code and API logic.
+*   `docs/` - Original project documentation and agent profiles.
 
 ## 4. Architecture & data flow
-1.  **Ingestion:** Email arrives.
-2.  **Processing:** The backend uses the OpenRouter API to analyze the email.
-3.  **Classification:** The AI model assigns a category, priority, and confidence score.
-4.  **Action & Drafting:** The AI suggests actions and drafts a response.
-5.  **Review:** The operator reviews the AI's insights in the frontend.
-6.  **Action:** The operator can override the classification or send the drafted response.
+1.  **Input:** User pastes text into the "+ New Enquiry" modal.
+2.  **Context Injection:** Frontend retrieves the active "Tone" and "Signature" from global state.
+3.  **API Call:** A POST request is sent to the Spring Boot `/api/triage` endpoint.
+4.  **Backend Processing:** The backend constructs a multi-layered prompt (System + User context).
+5.  **AI Analysis:** OpenRouter processes the text and returns a structured JSON payload.
+6.  **UI Update:** The frontend populates the "AI Insights" panel with live data, actions, and a draft.
 
 ## 5. Setup & run
-1. Navigate to the `Frontend` directory: `cd Frontend`
-2. Install dependencies: `npm install`
-3. Create a `.env.local` file in the `Frontend` directory and add your OpenRouter API key:
-   ```
-   VITE_OPENROUTER_API_KEY=your_api_key_here
-   ```
-4. Start the development server: `npm run dev`
+
+### Prerequisites
+*   Java 17+
+*   Node.js 18+
+*   OpenRouter API Key
+
+### A. Backend Setup
+1.  `cd Backend/triage-backend`
+2.  Create a file named `.env-secret-local`.
+3.  Add your key exactly like this:
+    ```properties
+    OPENROUTER_API_KEY=your_key_here
+    ```
+4.  Run the server: `./mvnw spring-boot:run` (Server runs on port 8080).
+    *   *Note: If you modify Java files, restart this process.*
+
+### B. Frontend Setup
+1.  `cd Frontend`
+2.  Install: `npm install`
+3.  Start: `npm run dev`
+4.  Open: `http://localhost:5173`
 
 ## 6. The four classifications
-*   **Support (Amber):** Existing owner/resident needing help.
-*   **New Client (Green):** Developer or prospect asking about services.
-*   **Complaint (Red):** Formal or escalating grievance.
-*   **General (Grey):** Routine admin, document requests.
+*   **Support (Amber):** Existing owners needing technical or portal help.
+*   **New Client (Green):** Developers/Prospects requesting management proposals.
+*   **Complaint (Red):** Formal grievances (Noise, Water Ingress, Safety).
+*   **General (Grey):** Routine admin, document requests, or fob replacements.
 
 ## 7. Prompt engineering
-The application relies on carefully crafted prompts sent to the `inclusionai/ring-2.6-1t:free` model to ensure accurate categorization, entity extraction, and professional tone matching.
+The backend utilizes **Strict Schema Constraints**. We force the LLM to output valid JSON.
+*   **Dynamic Tone:** The prompt is modified live: *"Draft the response using a [SelectedTone] tone."*
+*   **Signature Injection:** The AI is instructed to use the specific name/role from your Settings.
 
 ## 8. Confidence scoring
-The AI assigns a confidence score (0-100%) to its classification. Scores below 70% trigger a visual warning in the UI, prompting the operator for manual review.
+The AI provides a numeric certainty value.
+*   **> 70%:** Normal display.
+*   **< 70%:** UI displays a red "Low confidence" warning and suggests manual review.
 
 ## 9. Manual Override — why and how
-**Why:** To ensure human accountability and correct AI mistakes, acting as a feedback loop for future model training.
-**How:** A dropdown in the AI Insights panel allows operators to change the category. This action is recorded in the Audit Trail and disables the AI confidence bar.
+**Why:** AI is a "co-pilot," not the pilot. Human accountability is mandatory in strata law.
+**How:** Clicking "Manual Override" lets the operator fix a category. This action is logged in the "Audit Trail" for transparency.
 
 ## 10. Error handling
-The UI is designed to handle missing data gracefully (e.g., using `ImageWithFallback.tsx`) and clearly display AI uncertainty.
+*   **Network Resilience:** If the backend or API is unreachable, the UI displays an "API call failed" warning without crashing.
+*   **Processing State:** While the AI is thinking, the UI shows "Processing..." to prevent operator confusion.
 
 ## 11. Automation potential
-While currently a "Human-in-the-loop" system, high-confidence routines (e.g., general document requests) could eventually be fully automated.
+High-confidence "General" enquiries (like fob requests) could be set to "Auto-Send" in a future production version, allowing staff to focus exclusively on "Complaints" and "New Clients."
 
 ## 12. Design decisions
-*   **Dark Mode (`zinc-900`):** Reduces eye strain for operators.
-*   **No Chat Bubbles:** Maintains a professional, B2B tool aesthetic.
-*   **Visible Confidence:** Builds trust through transparency.
-*   **Archive-on-Send:** Keeps the inbox clean and focused.
+*   **No Chat Bubbles:** Designed as a professional productivity tool (B2B), not a consumer chat app.
+*   **Zinc-900 Dark Mode:** Optimized for long-shift operators to reduce eye strain.
+*   **Lifted Global Settings:** Settings are applied at the root, ensuring the AI and UI stay in sync globally.
+*   **Live Simulation:** The "+ New Enquiry" button was added specifically to meet the "Accept client enquiry as input" requirement.
 
-## 13. Scoring map
-*   `90-100%`: High confidence, standard review.
-*   `70-89%`: Medium confidence, careful review advised.
-*   `<70%`: Low confidence, explicit warning displayed to operator.
+## 13. Criteria Checklist (Scoring Map)
+| Criteria | Implementation in this App |
+| :--- | :--- |
+| **AI Integration** | OpenRouter integration via Spring Boot REST Client. |
+| **Useful Output** | Structured JSON mapping to checkboxes, drafts, and intent. |
+| **Code Quality** | Clean separation of React components and Java Services. |
+| **Practical Thinking** | Manual override, Audit trails, and Archive-on-Send workflow. |
+| **Prompt Design** | Context-aware prompts including Tone and Operator Identity. |
+| **Bonus Features** | Confidence bar, Real-time timestamps, and Fallback handling. |
+
+## 14. Demo Scenarios (Copy-Paste)
+
+### Scenario A: Urgent Complaint
+**Subject:** STUCK DOOR!
+**Body:**
+> Hi team, the visitor gate is broken again. Someone is going to get hurt if this isn't fixed today. Marcus, Lot 12.
+
+### Scenario B: General Enquiry
+**Subject:** New Keys
+**Body:**
+> Hello, can I get a quote for a new set of common property keys? I lost my gym fob. Thanks, Sarah.
